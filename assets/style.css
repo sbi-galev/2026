@@ -287,6 +287,11 @@ main {
 .cards.three { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .cards.four { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
+.cards.narrow {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
+  justify-content: flex-start;
+}
+
 .card {
   background: var(--panel-strong);
   border: 1px solid var(--border);
