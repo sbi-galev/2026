@@ -20,7 +20,8 @@
 
   <header class="hero" id="top">
     <nav class="nav">
-      <div class="brand">SBI for Galaxy Evolution 2026</div>
+      <a class="brand" href="#top">SBI for Galaxy Evolution 2026</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
       <div class="nav-links">
         <a href="#overview">Overview</a>
         <a href="#dates">Dates</a>
@@ -405,5 +406,22 @@
       <a href="https://sbi-galev.github.io/2024/" target="_blank" rel="noopener">2024</a>
     </div>
   </footer>
+  <script>
+    const nav = document.querySelector('.nav');
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    if (toggle && nav && links) {
+      toggle.addEventListener('click', () => {
+        const isOpen = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  </script>
 </body>
 </html>
