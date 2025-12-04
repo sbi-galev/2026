@@ -276,6 +276,10 @@ main {
   gap: 16px;
 }
 
+.cards + .cards {
+  margin-top: 14px;
+}
+
 .cards.spaced {
   gap: 24px;
 }
