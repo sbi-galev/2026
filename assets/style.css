@@ -287,9 +287,14 @@ main {
 .cards.three { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .cards.four { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
-.cards.narrow {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
-  justify-content: flex-start;
+.cards.fixed-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .cards.fixed-three {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
 }
 
 .card {
