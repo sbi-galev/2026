@@ -34,10 +34,15 @@ section {
 }
 
 .background {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(18, 45, 122, 0.55) 0, rgba(18, 45, 122, 0) 24rem),
+    radial-gradient(circle at 92% 72%, rgba(20, 198, 177, 0.45) 0, rgba(20, 198, 177, 0) 20rem),
+    radial-gradient(circle at 30% 100%, rgba(130, 70, 255, 0.16) 0, rgba(130, 70, 255, 0) 16rem);
 }
 
 .grid {
@@ -64,13 +69,14 @@ section {
 
 .orb {
   position: absolute;
-  filter: blur(70px);
-  opacity: 0.65;
+  border-radius: 50%;
+  opacity: 0.9;
+  background: radial-gradient(circle, currentColor 0, rgba(255, 255, 255, 0) 72%);
 }
 
-.orb-1 { width: 380px; height: 380px; background: #122d7a; top: -60px; left: -80px; }
-.orb-2 { width: 320px; height: 320px; background: #14c6b1; bottom: 120px; right: -40px; }
-.orb-3 { width: 260px; height: 260px; background: #8246ff; bottom: -20px; left: 30%; opacity: 0.25; }
+.orb-1 { width: 380px; height: 380px; color: rgba(18, 45, 122, 0.82); top: -60px; left: -80px; }
+.orb-2 { width: 320px; height: 320px; color: rgba(20, 198, 177, 0.72); bottom: 120px; right: -40px; }
+.orb-3 { width: 260px; height: 260px; color: rgba(130, 70, 255, 0.38); bottom: -20px; left: 30%; opacity: 0.55; }
 
 h1, h2, h3, h4 {
   margin: 0 0 10px;
@@ -98,9 +104,9 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   padding: 18px 32px;
-  background: rgba(4, 7, 19, 0.7);
-  backdrop-filter: blur(12px);
+  background: rgba(4, 7, 19, 0.94);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
 }
 
 .brand {
