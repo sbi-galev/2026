@@ -293,11 +293,16 @@ main {
 .cards.three { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .cards.four { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
+.cards.fixed-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .cards.fixed-three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 @media (max-width: 900px) {
+  .cards.fixed-two,
   .cards.fixed-three {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
@@ -363,6 +368,7 @@ main {
 }
 
 .mini-card {
+  display: block;
   padding: 14px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
@@ -372,6 +378,20 @@ main {
 
 .mini-card h4 {
   margin: 2px 0 6px;
+}
+
+.mini-card-link {
+  color: var(--text);
+  background: linear-gradient(135deg, rgba(99, 245, 176, 0.16), rgba(137, 184, 255, 0.12));
+  transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.mini-card-link:hover {
+  color: var(--text);
+  border-color: rgba(99, 245, 176, 0.42);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34), 0 0 24px rgba(99, 245, 176, 0.12);
+  background: linear-gradient(135deg, rgba(99, 245, 176, 0.22), rgba(137, 184, 255, 0.18));
+  transform: translateY(-2px);
 }
 
 .mini-card.crossed-out {
