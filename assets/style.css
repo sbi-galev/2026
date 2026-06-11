@@ -589,6 +589,11 @@ main {
   margin-bottom: 6px;
 }
 
+.abstract-affiliation {
+  color: #dce8ff;
+  margin-bottom: 8px;
+}
+
 .abstract-panel h4 {
   color: #dce8ff;
   margin-top: 16px;
