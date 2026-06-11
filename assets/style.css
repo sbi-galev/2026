@@ -404,13 +404,16 @@ main {
   transform: translateY(-2px);
 }
 
-.mini-card.crossed-out {
+.mini-card.crossed-out,
+.card.crossed-out {
   position: relative;
   opacity: 0.6;
 }
 
 .mini-card.crossed-out::before,
-.mini-card.crossed-out::after {
+.mini-card.crossed-out::after,
+.card.crossed-out::before,
+.card.crossed-out::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -426,8 +429,13 @@ main {
   transform: rotate(15deg);
 }
 
-.mini-card.crossed-out::after {
+.mini-card.crossed-out::after,
+.card.crossed-out::after {
   transform: rotate(-15deg);
+}
+
+.card.crossed-out::before {
+  transform: rotate(12deg);
 }
 
 .schedule {
