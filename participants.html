@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participants | SBI GALEV 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="background">
+    <div class="grid"></div>
+    <div class="stars"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <header class="subpage-hero" id="top">
+    <nav class="nav">
+      <a class="brand" href="index.html">SBI for Galaxy Evolution 2026</a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <div class="nav-links">
+        <a href="index.html#overview">Overview</a>
+        <a href="index.html#dates">Dates</a>
+        <a href="schedule.html">Schedule</a>
+        <a href="participants.html" aria-current="page">Participants</a>
+        <a href="index.html#logistics">Venue</a>
+        <a href="index.html#conduct">Conduct</a>
+      </div>
+    </nav>
+
+    <div class="subpage-title">
+      <p class="label">SBI for Galaxy Evolution 2026</p>
+      <h1>Participants</h1>
+      <p class="lead">Registered participants for the Cambridge workshop.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel participants-panel" aria-labelledby="participants-heading">
+      <div class="section-header">
+        <p class="label">Attendees</p>
+        <h2 id="participants-heading">Participant list</h2>
+        <p class="muted">62 participants listed alphabetically by surname.</p>
+      </div>
+
+      <ul class="participants-list">
+        <li>Alex Alarcon</li>
+        <li>Gregoire Aufort</li>
+        <li>Uzay Aydın</li>
+        <li>Deaglan Bartlett</li>
+        <li>Thomas Bebbington</li>
+        <li>Boris Bolliett</li>
+        <li>Caterina Bracci</li>
+        <li>Joey Braspenning</li>
+        <li>Richard Brooks</li>
+        <li>Johannes Buchner</li>
+        <li>Benedict Van den Bussche</li>
+        <li>Francisco Javier Castander</li>
+        <li>Nick Choustikov</li>
+        <li>Dawid Chudy</li>
+        <li>Philippa Cole</li>
+        <li>Christopher Conselice</li>
+        <li>Suchetha Cooray</li>
+        <li>Carolina Cuesta-Lazaro</li>
+        <li>Sinan Deger</li>
+        <li>Carolyn Devereux</li>
+        <li>Subhrata Dey</li>
+        <li>Chenze Dong</li>
+        <li>Arya Farahi</li>
+        <li>Lawrence Faria</li>
+        <li>Robert Feldman</li>
+        <li>Silvan Fischbacher</li>
+        <li>Sotiria Fotopoulou</li>
+        <li>Andrew Green</li>
+        <li>Julian Groth</li>
+        <li>Eduardo Hartmann</li>
+        <li>Thomas Harvey</li>
+        <li>Oscar Hickman</li>
+        <li>Niall Jeffrey</li>
+        <li>Christian Kragh Jespersen</li>
+        <li>Sherman Khoo</li>
+        <li>Timo Kist</li>
+        <li>Dakshesh Kololgi</li>
+        <li>Carolina Mercedes García López</li>
+        <li>Chris Lovell</li>
+        <li>Lucas Makinen</li>
+        <li>Teresa Matamoro</li>
+        <li>Patricia Iglesias Navarro</li>
+        <li>Sophie Newman</li>
+        <li>Hiranya Peiris</li>
+        <li>Steven Ramnichal</li>
+        <li>James Kostas Ray</li>
+        <li>Alexandre Refregier</li>
+        <li>Jonah Rose</li>
+        <li>Alex Saoulis</li>
+        <li>Ming Shau-Liu</li>
+        <li>Leonor Lisboa Simoes</li>
+        <li>Tanmay Singh</li>
+        <li>Grant Stevens</li>
+        <li>Richard Stiskalek</li>
+        <li>Amanda Stoffers</li>
+        <li>Teresa Su</li>
+        <li>Stephen Thorp</li>
+        <li>Luca Tortorelli</li>
+        <li>Shunya Uchida</li>
+        <li>Giuseppe Viterbo</li>
+        <li>Maximilian von Wietersheim-Kramsta</li>
+        <li>Yichen Zang</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>SBI for Galaxy Evolution 2026</p>
+    <div class="links-inline">
+      <a href="index.html">Home</a>
+      <a href="#top">Back to top</a>
+      <a href="https://sbi-galev.github.io/2025/" target="_blank" rel="noopener">2025</a>
+      <a href="https://sbi-galev.github.io/2024/" target="_blank" rel="noopener">2024</a>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.querySelector('.nav');
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.querySelector('.nav-links');
+    if (toggle && nav && links) {
+      toggle.addEventListener('click', () => {
+        const isOpen = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  </script>
+</body>
+</html>

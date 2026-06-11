@@ -611,6 +611,31 @@ main {
   font-size: 13px;
 }
 
+.participants-panel {
+  max-width: 1100px;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.participants-list li {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #e5efff;
+  font-weight: 600;
+}
+
 .day {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
