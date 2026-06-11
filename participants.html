@@ -47,70 +47,31 @@
         <p class="muted">62 participants listed alphabetically by surname.</p>
       </div>
 
-      <ul class="participants-list">
-        <li>Alex Alarcon</li>
-        <li>Gregoire Aufort</li>
-        <li>Uzay Aydın</li>
-        <li>Deaglan Bartlett</li>
-        <li>Thomas Bebbington</li>
-        <li>Boris Bolliett</li>
-        <li>Caterina Bracci</li>
-        <li>Joey Braspenning</li>
-        <li>Richard Brooks</li>
-        <li>Johannes Buchner</li>
-        <li>Benedict Van den Bussche</li>
-        <li>Francisco Javier Castander</li>
-        <li>Nick Choustikov</li>
-        <li>Dawid Chudy</li>
-        <li>Philippa Cole</li>
-        <li>Christopher Conselice</li>
-        <li>Suchetha Cooray</li>
-        <li>Carolina Cuesta-Lazaro</li>
-        <li>Sinan Deger</li>
-        <li>Carolyn Devereux</li>
-        <li>Subhrata Dey</li>
-        <li>Chenze Dong</li>
-        <li>Arya Farahi</li>
-        <li>Lawrence Faria</li>
-        <li>Robert Feldman</li>
-        <li>Silvan Fischbacher</li>
-        <li>Sotiria Fotopoulou</li>
-        <li>Andrew Green</li>
-        <li>Julian Groth</li>
-        <li>Eduardo Hartmann</li>
-        <li>Thomas Harvey</li>
-        <li>Oscar Hickman</li>
-        <li>Niall Jeffrey</li>
-        <li>Christian Kragh Jespersen</li>
-        <li>Sherman Khoo</li>
-        <li>Timo Kist</li>
-        <li>Dakshesh Kololgi</li>
-        <li>Carolina Mercedes García López</li>
-        <li>Chris Lovell</li>
-        <li>Lucas Makinen</li>
-        <li>Teresa Matamoro</li>
-        <li>Patricia Iglesias Navarro</li>
-        <li>Sophie Newman</li>
-        <li>Hiranya Peiris</li>
-        <li>Steven Ramnichal</li>
-        <li>James Kostas Ray</li>
-        <li>Alexandre Refregier</li>
-        <li>Jonah Rose</li>
-        <li>Alex Saoulis</li>
-        <li>Ming Shau-Liu</li>
-        <li>Leonor Lisboa Simoes</li>
-        <li>Tanmay Singh</li>
-        <li>Grant Stevens</li>
-        <li>Richard Stiskalek</li>
-        <li>Amanda Stoffers</li>
-        <li>Teresa Su</li>
-        <li>Stephen Thorp</li>
-        <li>Luca Tortorelli</li>
-        <li>Shunya Uchida</li>
-        <li>Giuseppe Viterbo</li>
-        <li>Maximilian von Wietersheim-Kramsta</li>
-        <li>Yichen Zang</li>
-      </ul>
+      <div class="participants-layout">
+        <div class="participants-table-wrap">
+          <table class="participants-table">
+            <thead>
+              <tr>
+                <th scope="col">Participant</th>
+                <th scope="col">Role</th>
+                <th scope="col">Website</th>
+              </tr>
+            </thead>
+            <tbody id="participants-body">
+              <tr><td colspan="3">Loading participants...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="participant-detail" aria-live="polite">
+          <p class="label" id="participant-role">Participant details</p>
+          <h3 id="participant-name">Select a participant</h3>
+          <p class="participant-website" id="participant-website" hidden></p>
+          <div id="participant-sessions" class="participant-sessions">
+            <p class="muted">Talk and tutorial details will appear here when available.</p>
+          </div>
+        </aside>
+      </div>
     </section>
   </main>
 
@@ -140,6 +101,192 @@
         });
       });
     }
+
+    const participantsBody = document.querySelector('#participants-body');
+    const detailRole = document.querySelector('#participant-role');
+    const detailName = document.querySelector('#participant-name');
+    const detailWebsite = document.querySelector('#participant-website');
+    const detailSessions = document.querySelector('#participant-sessions');
+
+    function normalizeName(value) {
+      return (value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let value = '';
+      let quoted = false;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const char = text[index];
+        const next = text[index + 1];
+
+        if (char === '"' && quoted && next === '"') {
+          value += '"';
+          index += 1;
+        } else if (char === '"') {
+          quoted = !quoted;
+        } else if (char === ',' && !quoted) {
+          row.push(value);
+          value = '';
+        } else if ((char === '\n' || char === '\r') && !quoted) {
+          if (char === '\r' && next === '\n') {
+            index += 1;
+          }
+          row.push(value);
+          if (row.some((cell) => cell.trim())) {
+            rows.push(row);
+          }
+          row = [];
+          value = '';
+        } else {
+          value += char;
+        }
+      }
+
+      row.push(value);
+      if (row.some((cell) => cell.trim())) {
+        rows.push(row);
+      }
+
+      const headers = (rows.shift() || []).map((header) => header.trim().toLowerCase());
+      return rows.map((cells) => Object.fromEntries(headers.map((header, index) => [header, (cells[index] || '').trim()])));
+    }
+
+    function splitSpeakers(value) {
+      return (value || '').split(/,| and /).map((speaker) => speaker.trim()).filter(Boolean);
+    }
+
+    function roleFor(name, sessions) {
+      const personSessions = sessions.filter((session) => splitSpeakers(session.speakers || session.name).some((speaker) => normalizeName(speaker) === normalizeName(name)));
+      if (personSessions.some((session) => /invited/i.test(session.session || ''))) {
+        return 'invited';
+      }
+      if (personSessions.length) {
+        return 'speaker';
+      }
+      return 'participant';
+    }
+
+    function roleLabel(role) {
+      if (role === 'invited') return 'Invited speaker';
+      if (role === 'speaker') return 'Speaker';
+      return 'Participant';
+    }
+
+    function showParticipant(participant, sessions, row) {
+      const role = roleFor(participant.name, sessions);
+      const personSessions = sessions.filter((session) => splitSpeakers(session.speakers || session.name).some((speaker) => normalizeName(speaker) === normalizeName(participant.name)));
+
+      document.querySelectorAll('.participants-table tr.active').forEach((item) => item.classList.remove('active'));
+      row.classList.add('active');
+
+      detailRole.textContent = roleLabel(role);
+      detailName.textContent = participant.name;
+
+      if (participant.website) {
+        detailWebsite.hidden = false;
+        detailWebsite.innerHTML = '';
+        const link = document.createElement('a');
+        link.href = participant.website;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Personal website';
+        detailWebsite.append(link);
+      } else {
+        detailWebsite.hidden = true;
+        detailWebsite.textContent = '';
+      }
+
+      detailSessions.innerHTML = '';
+      if (!personSessions.length) {
+        const empty = document.createElement('p');
+        empty.className = 'muted';
+        empty.textContent = 'No scheduled talk or tutorial listed.';
+        detailSessions.append(empty);
+        return;
+      }
+
+      personSessions.forEach((session) => {
+        const item = document.createElement('article');
+        item.className = 'participant-session';
+
+        const heading = document.createElement('h4');
+        heading.textContent = session.title || session.name || 'Scheduled session';
+        item.append(heading);
+
+        const meta = document.createElement('p');
+        meta.className = 'abstract-meta';
+        meta.textContent = [session.session, session.day, session.time, session.affiliation, session.name && session.name !== participant.name ? session.name : ''].filter(Boolean).join(' · ');
+        if (meta.textContent) {
+          item.append(meta);
+        }
+
+        const details = document.createElement('details');
+        details.className = 'participant-abstract';
+
+        const summary = document.createElement('summary');
+        summary.textContent = 'Abstract';
+        details.append(summary);
+
+        const body = document.createElement('p');
+        body.className = session.abstract ? '' : 'muted';
+        body.textContent = session.abstract || 'Abstract not available yet.';
+        details.append(body);
+        item.append(details);
+
+        detailSessions.append(item);
+      });
+    }
+
+    fetch('assets/schedule-abstracts.csv', { cache: 'no-store' })
+    .then((response) => response.ok ? response.text() : '')
+    .then((text) => {
+      const rows = parseCsv(text);
+      const participants = rows.filter((row) => row.record_type === 'participant');
+      const sessions = rows.filter((row) => row.record_type === 'session');
+      participantsBody.innerHTML = '';
+
+      participants.forEach((participant) => {
+        const role = roleFor(participant.name, sessions);
+        const row = document.createElement('tr');
+        row.className = `participant-row role-${role}`;
+        row.tabIndex = 0;
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = participant.name;
+        row.append(nameCell);
+
+        const roleCell = document.createElement('td');
+        roleCell.textContent = roleLabel(role);
+        row.append(roleCell);
+
+        const websiteCell = document.createElement('td');
+        if (participant.website) {
+          const link = document.createElement('a');
+          link.href = participant.website;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'Website';
+          websiteCell.append(link);
+        }
+        row.append(websiteCell);
+
+        row.addEventListener('click', () => showParticipant(participant, sessions, row));
+        row.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            showParticipant(participant, sessions, row);
+          }
+        });
+
+        participantsBody.append(row);
+      });
+
+    }).catch(() => {
+      participantsBody.innerHTML = '<tr><td colspan="3">Unable to load participants.</td></tr>';
+    });
   </script>
 </body>
 </html>
