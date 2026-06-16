@@ -171,6 +171,71 @@
       return (value || '').split(/,| and /).map((speaker) => speaker.trim()).filter(Boolean);
     }
 
+    function namedValueFor(value, speaker, multiSpeaker) {
+      if (!value) {
+        return '';
+      }
+      if (!multiSpeaker) {
+        return value;
+      }
+
+      const speakerKey = normalizeName(speaker);
+      const match = value.split(';').map((item) => item.trim()).find((item) => {
+        const separator = item.indexOf(':');
+        return separator > -1 && normalizeName(item.slice(0, separator)) === speakerKey;
+      });
+
+      if (!match) {
+        return '';
+      }
+
+      return match.slice(match.indexOf(':') + 1).trim();
+    }
+
+    function addPerson(people, name, affiliation, website) {
+      if (!name) {
+        return;
+      }
+
+      const key = normalizeName(name);
+      const person = people.get(key) || { name, affiliation: '', website: '' };
+      person.affiliation = person.affiliation || affiliation || '';
+      person.website = person.website || website || '';
+      people.set(key, person);
+    }
+
+    function buildParticipants(rows) {
+      const people = new Map();
+
+      rows.forEach((row) => {
+        if (row.record_type === 'participant') {
+          addPerson(people, row.name, row.affiliation, row.website);
+          return;
+        }
+
+        if (row.record_type !== 'session') {
+          return;
+        }
+
+        const speakers = splitSpeakers(row.speakers || row.name);
+        const multiSpeaker = speakers.length > 1;
+        speakers.forEach((speaker) => {
+          addPerson(
+            people,
+            speaker,
+            namedValueFor(row.affiliation, speaker, multiSpeaker),
+            namedValueFor(row.website, speaker, multiSpeaker)
+          );
+        });
+      });
+
+      return Array.from(people.values()).sort((left, right) => {
+        const leftName = left.name.split(/\s+/).slice(-1)[0] || left.name;
+        const rightName = right.name.split(/\s+/).slice(-1)[0] || right.name;
+        return leftName.localeCompare(rightName) || left.name.localeCompare(right.name);
+      });
+    }
+
     function roleFor(name, sessions) {
       const personSessions = sessions.filter((session) => splitSpeakers(session.speakers || session.name).some((speaker) => normalizeName(speaker) === normalizeName(name)));
       if (personSessions.some((session) => /invited/i.test(session.session || ''))) {
@@ -259,8 +324,8 @@
     .then((response) => response.ok ? response.text() : '')
     .then((text) => {
       const rows = parseCsv(text);
-      const participants = rows.filter((row) => row.record_type === 'participant');
       const sessions = rows.filter((row) => row.record_type === 'session');
+      const participants = buildParticipants(rows);
       participantsBody.innerHTML = '';
 
       participants.forEach((participant) => {

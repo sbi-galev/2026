@@ -286,6 +286,60 @@
       return (value || '').split(/,| and /).map((speaker) => speaker.trim()).filter(Boolean);
     }
 
+    function namedValueFor(value, speaker, multiSpeaker) {
+      if (!value) {
+        return '';
+      }
+      if (!multiSpeaker) {
+        return value;
+      }
+
+      const speakerKey = normalizeName(speaker);
+      const match = value.split(';').map((item) => item.trim()).find((item) => {
+        const separator = item.indexOf(':');
+        return separator > -1 && normalizeName(item.slice(0, separator)) === speakerKey;
+      });
+
+      if (!match) {
+        return '';
+      }
+
+      return match.slice(match.indexOf(':') + 1).trim();
+    }
+
+    function addParticipant(name, affiliation, website) {
+      if (!name) {
+        return;
+      }
+
+      const key = normalizeName(name);
+      const existing = participantMap.get(key) || { name, affiliation: '', website: '' };
+      existing.affiliation = existing.affiliation || affiliation || '';
+      existing.website = existing.website || website || '';
+      participantMap.set(key, existing);
+    }
+
+    function addParticipantsFromEntry(entry) {
+      if (entry.record_type === 'participant') {
+        addParticipant(entry.name, entry.affiliation, entry.website);
+        return;
+      }
+
+      if (entry.record_type !== 'session') {
+        return;
+      }
+
+      const speakers = splitSpeakers(entry.speakers || entry.name);
+      const multiSpeaker = speakers.length > 1;
+      speakers.forEach((speaker) => {
+        addParticipant(
+          speaker,
+          namedValueFor(entry.affiliation, speaker, multiSpeaker),
+          namedValueFor(entry.website, speaker, multiSpeaker)
+        );
+      });
+    }
+
     function affiliationFor(button, match) {
       const speakers = splitSpeakers(button.dataset.speakers || button.dataset.name);
       const affiliations = speakers.map((speaker) => {
@@ -346,9 +400,7 @@
         .then((response) => response.ok ? response.text() : '')
         .then((text) => {
           parseCsv(text).forEach((entry) => {
-            if (entry.record_type === 'participant' && entry.name) {
-              participantMap.set(normalizeName(entry.name), entry);
-            }
+            addParticipantsFromEntry(entry);
             if (entry.key) {
               abstractMap.set(normalizeName(entry.key), entry);
             }
