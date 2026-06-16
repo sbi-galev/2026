@@ -657,6 +657,11 @@ main {
   font-weight: 600;
 }
 
+.participants-table td:nth-child(2) {
+  color: var(--text);
+  font-size: 14px;
+}
+
 .participants-table tr:last-child td {
   border-bottom: 0;
 }
@@ -697,8 +702,13 @@ main {
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.38);
 }
 
+.participant-affiliation,
 .participant-website {
   margin-bottom: 14px;
+}
+
+.participant-affiliation {
+  color: #dce8ff;
 }
 
 .participant-sessions {

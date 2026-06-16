@@ -266,6 +266,7 @@
     }
 
     const abstractMap = new Map();
+    const participantMap = new Map();
     const nameEl = document.querySelector('#abstract-name');
     const sessionEl = document.querySelector('#abstract-session');
     const affiliationEl = document.querySelector('#abstract-affiliation');
@@ -279,6 +280,23 @@
 
     function abstractKeyFor(button) {
       return normalizeName([button.dataset.name, button.dataset.session, button.dataset.day, button.dataset.time].join(' '));
+    }
+
+    function splitSpeakers(value) {
+      return (value || '').split(/,| and /).map((speaker) => speaker.trim()).filter(Boolean);
+    }
+
+    function affiliationFor(button, match) {
+      const speakers = splitSpeakers(button.dataset.speakers || button.dataset.name);
+      const affiliations = speakers.map((speaker) => {
+        const participant = participantMap.get(normalizeName(speaker));
+        if (!participant || !participant.affiliation) {
+          return '';
+        }
+        return speakers.length > 1 ? `${speaker}: ${participant.affiliation}` : participant.affiliation;
+      }).filter(Boolean);
+
+      return affiliations.join('; ') || match.affiliation || button.dataset.affiliation || '';
     }
 
     function parseCsv(text) {
@@ -328,10 +346,13 @@
         .then((response) => response.ok ? response.text() : '')
         .then((text) => {
           parseCsv(text).forEach((entry) => {
+            if (entry.record_type === 'participant' && entry.name) {
+              participantMap.set(normalizeName(entry.name), entry);
+            }
             if (entry.key) {
               abstractMap.set(normalizeName(entry.key), entry);
             }
-            if (entry.name && !abstractMap.has(normalizeName(entry.name))) {
+            if (entry.record_type === 'session' && entry.name && !abstractMap.has(normalizeName(entry.name))) {
               abstractMap.set(normalizeName(entry.name), entry);
             }
           });
@@ -344,7 +365,7 @@
       const match = abstractMap.get(abstractKeyFor(button)) || abstractMap.get(normalizeName(name)) || {};
       const title = match.title || button.dataset.title || '';
       const abstract = match.abstract || '';
-      const affiliation = match.affiliation || button.dataset.affiliation || '';
+      const affiliation = affiliationFor(button, match);
 
       document.querySelectorAll('.schedule-item.active').forEach((item) => item.classList.remove('active'));
       button.classList.add('active');
